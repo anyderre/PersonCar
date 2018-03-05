@@ -1,0 +1,10 @@
+body {
+    background-color: gray;
+}
+.formcontainer{
+    background-color: deepskyblue;
+}
+.person{
+    margin: 10%;
+    box-shadow: 3px 3px gray;
+}
