@@ -1,7 +1,10 @@
 package com.example.PersonCar.Controller;
 
 
+import com.example.PersonCar.Entities.Car;
 import com.example.PersonCar.Entities.Person;
+import com.example.PersonCar.Entities.PersonCar;
+import com.example.PersonCar.Repository.PersonCarRepository;
 import com.example.PersonCar.Repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,11 +27,26 @@ import java.util.List;
 public class PersonController {
     @Autowired
     private PersonRepository personRepository;
-
+    @Autowired
+    private PersonCarRepository personCarRepository;
     @PostMapping("/person/")
     public ResponseEntity<Void> savePerson(@Valid @RequestBody Person person, UriComponentsBuilder uriComponentsBuilder)
     {
-       personRepository.save(person);
+
+        List<PersonCar> personCarList = person.getPersonCars();
+        List<PersonCar> newList = new ArrayList<>();
+        person.setPersonCars(null);
+        Person currentPerson=personRepository.save(person);
+        for(PersonCar personCar : personCarList){
+            PersonCar p = new PersonCar();
+            p.setCar(personCar.getCar());
+            p.setPerson(currentPerson);
+            p.setFechaRegistro(new Date());
+            newList.add(p);
+            //personCarRepository.save(p);
+        }
+        currentPerson.setPersonCars(newList);
+        personRepository.save(currentPerson);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponentsBuilder.path("/person/{id}").buildAndExpand(person.getId()).toUri());
         return new ResponseEntity<>(headers, HttpStatus.CREATED);

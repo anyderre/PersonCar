@@ -8,3 +8,8 @@ body {
     margin: 10%;
     box-shadow: 3px 3px gray;
 }
+.cars-tags:hover span.cars-tags:after{
+    cursor: pointer;
+    content: 'X';
+    font-size: 17px;
+}

@@ -1,11 +1,11 @@
 /**
  * Created by anyderre on 04/03/18.
  */
-'use strict'
+'use strict';
 
-angular.module('personCarApp').controller('PersonController', ['$scope', 'PersonServices', function ($scope, PersonServices) {
+angular.module('personCarApp').controller('PersonController', ['$scope', 'PersonServices', 'CarServices', function ($scope, PersonServices,CarServices) {
     var self = this;
-    self.person = {id:null, name:'', edad:null}
+    self.person = {id:null, name:'', edad:null, personCars:[]}
     self.persons= [];
     self.successMessag='';
     self.errorMessage='';
@@ -13,24 +13,48 @@ angular.module('personCarApp').controller('PersonController', ['$scope', 'Person
     self.edit = edit;
     self.remove = remove;
     self.reset= reset;
+    self.changedCar =changedCar;
+    self.deleteCar=deleteCar;
+    self.cars = [];
+    self.choosenCars=[];
+    self.selectedCar={id:null, image:'', marca:'',color:''};
+    self.updated= false;
 
     fetchAllPersons();
+    fetchAllCar();
     function fetchAllPersons() {
         PersonServices.fetchAllPersons()
             .then(
                 function (d) {
                 self.persons = d;
+                    console.log(d);
             },
             function (errorResponse) {
-                console.error('Error while fetching Persons');
+                console.error(errorResponse);
             })
+    }
+
+    function fetchAllCar() {
+        CarServices.fetchAllCar()
+            .then(
+                function (d) {
+                    self.cars = d;
+                    console.log("Reading all the cars");
+                    console.log(d);
+                },
+                function (err) {
+                    console.error(err);
+                }
+            )
+
     }
     function createPerson(person) {
         PersonServices.createPerson(person)
             .then(
-                fetchAllPersons,function (err) {
+                fetchAllPersons,
+                function (err) {
                     self.errorMessage='Error while creating Person';
-                    console.error('Error while creating Person')
+                    console.error(err);
                 }
             )
     }
@@ -38,9 +62,10 @@ angular.module('personCarApp').controller('PersonController', ['$scope', 'Person
     function updatePerson(person, id) {
         PersonServices.updatePerson(person,id)
             .then(
-                fetchAllPersons,function (errResponse) {
-                    self.errorMessage='Error while creating Person';
-                    console.error('Error while updating Person')
+                fetchAllPersons,
+                function (errResponse) {
+                    self.errorMessage='Error while updating Person';
+                    console.error(errResponse);
                 }
             )
     }
@@ -48,9 +73,10 @@ angular.module('personCarApp').controller('PersonController', ['$scope', 'Person
     function deletePerson(id) {
         PersonServices.deletePerson(id)
             .then  (
-                fetchAllPersons,function (errResponse) {
+                fetchAllPersons,
+                function (errResponse) {
                     self.errorMessage='Error while creating Person';
-                    console.error('Error while deleting Person')
+                    console.error(errResponse)
                 }
             )
     }
@@ -58,6 +84,10 @@ angular.module('personCarApp').controller('PersonController', ['$scope', 'Person
     function submit() {
         if(self.person.id===null){
             console.log('Saving new User');
+            for(var i=0; i<self.choosenCars.length; i++){
+                self.person.personCars.push({id:null, person:null, car:self.choosenCars[i]})
+            }
+
             createPerson(self.person);
         }else {
             console.log('Updating person wtih id: '+self.person.id);
@@ -71,6 +101,7 @@ angular.module('personCarApp').controller('PersonController', ['$scope', 'Person
         for(var i=0; i<self.persons.length; i++){
             if (self.persons[i].id=== id){
                 self.person = angular.copy(self.persons[i]);
+                self.choosenCars= self.person.personCars;
                 break;
             }
         }
@@ -89,4 +120,28 @@ angular.module('personCarApp').controller('PersonController', ['$scope', 'Person
         self.person = {id:null, name:'', edad:null};
         $scope.myForm.$setPristine();//reset form
     }
+
+    function deleteCar(id) {
+        for(var i=0; i<self.choosenCars.length; i++){
+            if(self.choosenCars[i].id===id){
+                self.choosenCars.splice(i,1);
+            }
+        }
+    }
+
+
+   function changedCar(car) {
+
+       for(var i=0; i<self.choosenCars.length; i++){
+                   if(self.choosenCars[i] === car){
+                       self.updated=false;
+                     return;
+                   }
+               }
+           self.choosenCars.push(car);
+       self.updated =true;
+           console.log(self.choosenCars);
+
+   }
+
 }]);

@@ -1,5 +1,7 @@
 package com.example.PersonCar.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,7 +13,9 @@ import java.util.List;
  */
 @Data
 @Entity
-
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Car implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +23,7 @@ public class Car implements Serializable {
     private String image;
     private String color;
     private String marca;
-    @ManyToOne(targetEntity = PersonCar.class)
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<PersonCar> personCars;
     private boolean enabled = true;
 

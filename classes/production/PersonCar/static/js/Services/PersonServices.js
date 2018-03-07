@@ -2,7 +2,7 @@
  * Created by anyderre on 04/03/18.
  */
 
-'use strict '
+'use strict';
 angular.module('personCarApp').factory('PersonServices', ['$http','$q', function ($http, $q) {
     var REST_SERVICE_URI ='<a class = "vglink" href="http://localhost:5000/api/person/" rel="nofollow"><span>http</span><span>://</span><span>localhost</span><span>:</span><span>5000</span><span>/</span><span>api</span><span>/</span><span>person<span>/</span></span></a>';
     var factory = {
@@ -22,8 +22,7 @@ angular.module('personCarApp').factory('PersonServices', ['$http','$q', function
                 }, function (errResponse) {
                     console.error('Error while fetching person');
                     deferred.reject(errResponse);
-                }
-            );
+                });
         return deferred.promise;
     }
 
@@ -36,9 +35,7 @@ angular.module('personCarApp').factory('PersonServices', ['$http','$q', function
                 },function(errResponse){
                     console.error('Error while creating Person');
                     deferred.reject(errResponse);
-                }
-
-            );
+                });
         return deferred.promise;
     }
 
@@ -51,8 +48,7 @@ angular.module('personCarApp').factory('PersonServices', ['$http','$q', function
                 },function(errResponse){
                     console.error('Error while updating Person');
                     deferred.reject(errResponse);
-                }
-            );
+                });
         return deferred;
     }
     function deletePerson(id) {

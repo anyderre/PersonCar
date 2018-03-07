@@ -1,5 +1,8 @@
 package com.example.PersonCar.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,13 +14,17 @@ import java.util.List;
  */
 @Data
 @Entity
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Person implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private int edad;
-    @ManyToOne(targetEntity = PersonCar.class)
+   // @JsonBackReference
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private List<PersonCar> personCars;
     private boolean enabled = true;
 }
